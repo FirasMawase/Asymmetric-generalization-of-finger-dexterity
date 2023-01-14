@@ -1,0 +1,3 @@
+Prior to running the main GUI code, the hand devices need to be calibrated. This is done by placing different weights on each of the force sensors, measuring the voltage output, and calculating the voltage to newtons conversion factor. 
+First, run the calibration code (‘calibrate_V2N.m’) and then run the analysis code (‘calibrate_V2N_analyze.m’)
+The instructions are in the code itself. Make sure to enter the appropriate base directory (ctrl+f “basedir”).
