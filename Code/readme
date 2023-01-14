@@ -1,0 +1,69 @@
+# How to run:
+## Code Requirements
+The code runs on MATLAB and requires Psychtoolbox to run. Additionally, a variety of functions need to be loaded to matlab (using ‘Set Path’ and adding the util folder). 
+Calibration Code
+Prior to running the main GUI code, the hand devices need to be calibrated. This is done by placing different weights on each of the force sensors, measuring the voltage output, and calculating the voltage to newtons conversion factor. 
+First, run the calibration code (‘calibrate_V2N.m’) and then run the analysis code (‘calibrate_V2N_analyze.m’)
+The instructions are in the code itself. Make sure to enter the appropriate base directory (ctrl+f “basedir”).
+
+## GUI Code (Individuation_GUI.m)
+This code is set up with a running while(~isDone) loop which goes through various functions as needed.
+Prior to running the code:
+1.	Verify base directory (ctrl+f “basedir”).
+2.	Verify calibration files (ctrl+f “calibfile”).
+3.	Verify that both USBs are plugged in to the system appropriately and that the left hand is ‘Dev1’ and right hand is ‘Dev2’. If not, swap the device names in the initBoard function
+
+## Commands to start experiment:
+1.	Enter the participant’s name: “subj ___”
+- a.	You will be prompted to enter the day of the study (numeric value)
+2.	Enter “mvc” to perform the mvc task (at least once per person)
+3.	If you want to run a single target file, type “run BN TargetFile”
+- a.	BN=Block Number. Be consistent, enter 1 for the first block and 2 for the next, etc.
+- b.	TargetFile=type the target file’s name, including ending: ‘Gili_Run_BaselineLE.tgt’
+4.	If you want to run an automated array of 5 training blocks, type “run_Automated_Training E/F L/R”
+- a.	E/F=Extension or Flexion
+- b.	L/R=left or right hand
+- c.	The blocks are specified under the ‘run_Automated_Training’ case.
+5.	If you want to run an automated array of baseline testing blocks, type “run_Automated_Testing”
+- a.	The blocks are specified under the ‘run_Automated_Testing’ case.
+6.	When done, type ‘quit’ or ‘exit’
+
+## Various Functions
+*initExp*
+Used to initialize the experiment and includes the basics, such as base directory, calibration files, colors, and various flags used later on in the experiment. A useful flag is the gExp.simulation: when it is 1, the hand devices don’t need to be connected for the code to work.
+
+*exitExp8
+Closes the experiment
+
+*initBoard*
+Initializes the NI Data Acquisition devices. Also where the sampling frequency is set.
+
+*runBlock*
+The block function creates the files in which the data will be saved, reads the target file, sends to the ‘runTrial’ function, and saves the data. The zeroing function is used before each block and every 12 trials.
+
+*runTrial*
+Reads what the trial’s specific targets are and checks to see if the participant performed it well or not. The while loop is used during the trial to check the performance (active forces) in accordance with the phase of the trial (cases). 
+
+*initGraphics*
+Initializes the graphics department, in terms of opening the psychtoolbox window, creating the various (x,y) coordinates, etc.
+
+*updateGraphics*
+is used routinely to update the screen. It’s a taxing function which can be the source for some of the delay. There are various flags (show lines, show force bars…) that can be turned on or off in the rest of the code, and therefore affect what we see. The ‘Screen(‘Flip’..)’ command is what makes everything update on the screen.
+
+*initTextWindow*
+opens a text window, which shows the subject’s name, active forces, points, etc
+
+*updateTextWindow*
+updates the text window. Also a rather taxing part of the code, so if you want things to work faster don’t use it.
+
+*updateForce*
+calls on the DAQ to collect and read the data. The data is sampled at the frequency assigned in ‘initBoard’ and is saved in the RAW data file. Only the last/most recent force is displayed and used for calculations within the runTrial function, which is why there is a difference between the RAW data’s frequency and the live data’s frequency.
+
+*zeroFGili*
+A zeroing function, used to calculate the forces produced by the fingers at rest, which are then deducted from the forces obtained during trials in order to evaluate only the forces produced during the motion. Currently set as the average force over a 2.5 second time window.
+
+*runMVC*
+reads the mvc target file and sends the user to the runTrial function with the relevant mvc targets. Saves the mvc file for later use for this specific subject.
+
+*runDemo*
+Should do a demo of the experiment, but might crash. I didn’t really use it, I just explained what will happen using the GUI screen which pops up during initGraphics.
